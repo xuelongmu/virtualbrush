@@ -30,29 +30,17 @@ FTransform AStroke::GetNextSegmentTransform(FVector CurrentLocation)
 	auto SegmentTransform = FTransform();
 
 	//get location, starting point
-
 	auto StartLocation = GetActorTransform().InverseTransformPosition(PreviousCursorLocation);
 	auto EndLocation = GetActorTransform().InverseTransformPosition(CurrentLocation);
 	SegmentTransform.SetLocation(StartLocation);
 
-	//get rotation, the rotation from beginning to end of stroke
-
-	auto StartNormal = StartLocation.GetSafeNormal();
-	auto EndNormal = EndLocation.GetSafeNormal();
-	// auto Rotation = FQuat::FindBetweenNormals(StartNormal, EndNormal);
-
+	//get rotation, the rotation between forward vector and the segment's rotation
 	auto Segment = EndLocation - StartLocation;
 	auto SegmentNormal = Segment.GetSafeNormal();
 	auto Rotation = FQuat::FindBetweenNormals(FVector::ForwardVector, SegmentNormal);
 	SegmentTransform.SetRotation(Rotation);
 
 	//get scale, from beginning to end of stroke
-	auto Size = (EndLocation - StartLocation).Size();
-	auto MeshZSize = StrokeInstancedMesh->GetStaticMesh()->GetBounds().GetBox().GetSize().Z;
-	auto ZScale = Size / MeshZSize;
-	// SegmentTransform.SetScale3D(FVector(1, 1, ZScale));
-
-	// auto Segment = EndLocation - StartLocation;
 	SegmentTransform.SetScale3D(FVector(Segment.Size(), 1, 1));
 
 	return SegmentTransform;
