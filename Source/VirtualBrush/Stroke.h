@@ -21,10 +21,19 @@ public:
 
 private:
 	//helper
-	FTransform GetNextSegmentTransform(FVector CurrentLocation);
+	FTransform GetNextSegmentTransform(FVector CurrentLocation) const;
+	FTransform GetNextJointTransform(FVector CurrentLocation) const;
+
+	//components
 
 	UPROPERTY(VisibleAnywhere)
-	UInstancedStaticMeshComponent* StrokeInstancedMesh;
+	USceneComponent* Root;
+
+	UPROPERTY(VisibleAnywhere)
+	UInstancedStaticMeshComponent* StrokeMeshes;
+
+	UPROPERTY(VisibleAnywhere)
+	UInstancedStaticMeshComponent* JointMeshes;
 
 	//in world coordinates
 	UPROPERTY(VisibleAnywhere)

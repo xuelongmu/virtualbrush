@@ -9,23 +9,40 @@ AStroke::AStroke()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	StrokeInstancedMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("StrokeInstanceMesh"));
-	StrokeInstancedMesh->SetupAttachment(GetRootComponent());
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(Root);
+
+	StrokeMeshes = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("StrokeMeshes"));
+	StrokeMeshes->SetupAttachment(Root);
+
+	JointMeshes = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("JointMeshes"));
+	JointMeshes->SetupAttachment(Root);
 }
 
 void AStroke::Update(FVector CursorLocation)
 {
-	if (PreviousCursorLocation == FVector::ZeroVector)
+	if (PreviousCursorLocation.IsNearlyZero())
 	{
 		PreviousCursorLocation = CursorLocation;
+		JointMeshes->AddInstance(GetNextJointTransform(CursorLocation));
+		return;
 	}
 
-	StrokeInstancedMesh->AddInstance(GetNextSegmentTransform(CursorLocation));
+	StrokeMeshes->AddInstance(GetNextSegmentTransform(CursorLocation));
+
+	JointMeshes->AddInstance(GetNextJointTransform(CursorLocation));
 
 	PreviousCursorLocation = CursorLocation;
 }
 
-FTransform AStroke::GetNextSegmentTransform(FVector CurrentLocation)
+FTransform AStroke::GetNextJointTransform(FVector CurrentLocation) const
+{
+	auto JointTransform = FTransform();
+	JointTransform.SetLocation(GetActorTransform().InverseTransformPosition(CurrentLocation));
+	return JointTransform;
+}
+
+FTransform AStroke::GetNextSegmentTransform(FVector CurrentLocation) const
 {
 	auto SegmentTransform = FTransform();
 
