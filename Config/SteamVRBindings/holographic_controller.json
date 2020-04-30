@@ -17,6 +17,32 @@
 							"output": "/actions/main/in/StrokeRight"
 						}
 					}
+				},
+				{
+					"mode": "dpad",
+					"path": "/user/hand/right/input/trackpad",
+					"parameters":
+					{
+						"sub_mode": "click"
+					},
+					"inputs":
+					{
+						"north":
+						{
+							"output": "/actions/main/in/Save"
+						}
+					}
+				},
+				{
+					"mode": "button",
+					"path": "/user/hand/right/input/grip",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/Load"
+						}
+					}
 				}
 			],
 			"poses": [

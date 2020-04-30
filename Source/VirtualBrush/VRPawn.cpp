@@ -2,6 +2,8 @@
 
 #include "VRPawn.h"
 
+#include "Saving/BrushSaveGame.h"
+
 // Sets default values
 AVRPawn::AVRPawn()
 {
@@ -51,4 +53,30 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAction(TEXT("StrokeRight"), IE_Pressed, this, &AVRPawn::BeginStrokeRight);
 	PlayerInputComponent->BindAction(TEXT("StrokeRight"), IE_Released, this, &AVRPawn::EndStrokeRight);
+	PlayerInputComponent->BindAction(TEXT("Save"), IE_Released, this, &AVRPawn::Save);
+	PlayerInputComponent->BindAction(TEXT("Load"), IE_Released, this, &AVRPawn::Load);
+}
+
+void AVRPawn::Save()
+{
+	auto SaveGame = UBrushSaveGame::Create();
+	// SaveGame->RightController = RightController;
+	SaveGame->SerializeFromWorld(GetWorld());
+	SaveGame->Save();
+}
+
+void AVRPawn::Load()
+{
+	auto SaveGame = UBrushSaveGame::Load();
+	if (SaveGame)
+	{
+		// auto TestController = SaveGame->RightController;
+
+		// UE_LOG(LogTemp, Warning, TEXT("Controller found: %s"), *TestController->GetName());
+		SaveGame->DeserializeToWorld(GetWorld());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Save Game Not Found"));
+	}
 }

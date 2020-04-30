@@ -47,6 +47,9 @@ private:
 		}
 	}
 
+	void Save();
+	void Load();
+
 	//components
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* VRRoot;
