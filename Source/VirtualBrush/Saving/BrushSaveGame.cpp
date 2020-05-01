@@ -2,9 +2,9 @@
 
 #include "BrushSaveGame.h"
 
-#include "../Stroke.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "VirtualBrush/Stroke.h"
 
 UBrushSaveGame* UBrushSaveGame::Create()
 {
@@ -42,10 +42,10 @@ void UBrushSaveGame::SerializeFromWorld(UWorld* World)
 	Strokes.Empty();
 	for (TActorIterator<AStroke> StrokeItr(World); StrokeItr; ++StrokeItr)
 	{
-		//TODO:Serialize
-		Strokes.Add(StrokeItr->GetClass());
+		Strokes.Add(StrokeItr->SerializeToStruct());
 	}
 }
+
 void UBrushSaveGame::DeserializeToWorld(UWorld* World)
 {
 	// Clear existing strokes
@@ -55,8 +55,8 @@ void UBrushSaveGame::DeserializeToWorld(UWorld* World)
 	}
 
 	// Spawn saved classes
-	for (auto StrokeClass : Strokes)
+	for (FStrokeState StrokeState : Strokes)
 	{
-		World->SpawnActor<AStroke>(StrokeClass);
+		AStroke::SpawnAndDeserializeFromStruct(World, StrokeState);
 	}
 }

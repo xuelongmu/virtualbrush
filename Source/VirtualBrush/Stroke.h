@@ -5,7 +5,9 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "CoreMinimal.h"
+#include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "Saving/BrushSaveGame.h"
 
 #include "Stroke.generated.h"
 
@@ -18,6 +20,10 @@ public:
 	AStroke();
 
 	void Update(FVector CursorLocation);
+
+	FStrokeState SerializeToStruct() const;
+
+	static AStroke* SpawnAndDeserializeFromStruct(UWorld* World, const FStrokeState& StrokeState);
 
 private:
 	//helper
@@ -38,4 +44,7 @@ private:
 	//in world coordinates
 	UPROPERTY(VisibleAnywhere)
 	FVector PreviousCursorLocation = FVector::ZeroVector;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<FVector> ControlPoints;
 };

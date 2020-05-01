@@ -25,12 +25,12 @@ void AVRPawn::BeginPlay()
 
 	if (HandControllerClass)
 	{
-		// LeftController = GetWorld()->SpawnActor<AHandController>(HandControllerClass);
+		// LeftController = GetWorld()->SpawnActor<APaintBrushHandController>(HandControllerClass);
 		// LeftController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 		// LeftController->SetHand(EControllerHand::Left);
 		// LeftController->SetOwner(this);
 
-		RightController = GetWorld()->SpawnActor<AHandController>(HandControllerClass);
+		RightController = GetWorld()->SpawnActor<AHandControllerBase>(HandControllerClass);
 		RightController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 		RightController->SetHand(EControllerHand::Right);
 		RightController->SetOwner(this);
@@ -51,8 +51,8 @@ void AVRPawn::Tick(float DeltaTime)
 void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAction(TEXT("StrokeRight"), IE_Pressed, this, &AVRPawn::BeginStrokeRight);
-	PlayerInputComponent->BindAction(TEXT("StrokeRight"), IE_Released, this, &AVRPawn::EndStrokeRight);
+	PlayerInputComponent->BindAction(TEXT("StrokeRight"), IE_Pressed, this, &AVRPawn::TriggerPressedRight);
+	PlayerInputComponent->BindAction(TEXT("StrokeRight"), IE_Released, this, &AVRPawn::TriggerReleasedRight);
 	PlayerInputComponent->BindAction(TEXT("Save"), IE_Released, this, &AVRPawn::Save);
 	PlayerInputComponent->BindAction(TEXT("Load"), IE_Released, this, &AVRPawn::Load);
 }

@@ -5,7 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "HandController.h"
+#include "HandControllerBase.h"
 
 #include "VRPawn.generated.h"
 
@@ -31,19 +31,19 @@ public:
 
 private:
 	//callbacks
-	void BeginStrokeRight()
+	void TriggerPressedRight()
 	{
 		if (RightController)
 		{
-			RightController->BeginStroke();
+			RightController->TriggerPressed();
 		}
 	}
 
-	void EndStrokeRight()
+	void TriggerReleasedRight()
 	{
 		if (RightController)
 		{
-			RightController->EndStroke();
+			RightController->TriggerReleased();
 		}
 	}
 
@@ -59,12 +59,12 @@ private:
 
 	//references
 	UPROPERTY(VisibleAnywhere)
-	AHandController* LeftController;
+	AHandControllerBase* LeftController;
 
 	UPROPERTY(VisibleAnywhere)
-	AHandController* RightController;
+	AHandControllerBase* RightController;
 
 	// configuration parameters
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AHandController> HandControllerClass;
+	TSubclassOf<AHandControllerBase> HandControllerClass;
 };

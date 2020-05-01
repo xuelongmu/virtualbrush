@@ -4,9 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "../HandController.h"
-
 #include "BrushSaveGame.generated.h"
+
+USTRUCT()
+struct FStrokeState
+{
+	GENERATED_USTRUCT_BODY()
+
+	// FStrokeState(const TSubclassOf<AStroke> InClass,  TArray<FVector> InControlPoints)
+	//     : Class(InClass), ControlPoints(InControlPoints) {}
+public: 
+	UPROPERTY()
+	TSubclassOf<class AStroke> Class;
+
+	UPROPERTY()
+	TArray<FVector> ControlPoints;
+};
 
 /**
  * 
@@ -24,8 +37,5 @@ public:
 	void DeserializeToWorld(UWorld* World);
 
 	UPROPERTY(VisibleAnywhere)
-	AHandController* RightController;
-
-	UPROPERTY(VisibleAnywhere)
-	TArray<TSubclassOf<AStroke>> Strokes;
+	TArray<FStrokeState> Strokes;
 };
