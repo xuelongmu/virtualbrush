@@ -11,7 +11,6 @@ AVRPawn::AVRPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	VRRoot = CreateDefaultSubobject<USceneComponent>(TEXT("VRRoot"));
-	// VRRoot->SetupAttachment(GetRootComponent());
 	SetRootComponent(VRRoot);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -39,6 +38,12 @@ void AVRPawn::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("HandControllerClass not set up for %s"), *GetName());
 	}
+
+	auto PaintingSave = UBrushSaveGame::Create();
+	if (PaintingSave && PaintingSave->Save())
+	{
+		CurrentSlotName = PaintingSave->GetSlotName();
+	}
 }
 
 // Called every frame
@@ -59,21 +64,20 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AVRPawn::Save()
 {
-	auto SaveGame = UBrushSaveGame::Create();
-	// SaveGame->RightController = RightController;
-	SaveGame->SerializeFromWorld(GetWorld());
-	SaveGame->Save();
+	auto PaintingSave = UBrushSaveGame::Load(CurrentSlotName);
+	if (PaintingSave)
+	{
+		PaintingSave->SerializeFromWorld(GetWorld());
+		PaintingSave->Save();
+	}
 }
 
 void AVRPawn::Load()
 {
-	auto SaveGame = UBrushSaveGame::Load();
-	if (SaveGame)
+	auto PaintingSave = UBrushSaveGame::Load(CurrentSlotName);
+	if (PaintingSave)
 	{
-		// auto TestController = SaveGame->RightController;
-
-		// UE_LOG(LogTemp, Warning, TEXT("Controller found: %s"), *TestController->GetName());
-		SaveGame->DeserializeToWorld(GetWorld());
+		PaintingSave->DeserializeToWorld(GetWorld());
 	}
 	else
 	{

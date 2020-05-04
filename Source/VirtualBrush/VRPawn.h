@@ -67,4 +67,8 @@ private:
 	// configuration parameters
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AHandControllerBase> HandControllerClass;
+
+	//state
+	UPROPERTY(VisibleAnywhere)
+	FString CurrentSlotName;
 };

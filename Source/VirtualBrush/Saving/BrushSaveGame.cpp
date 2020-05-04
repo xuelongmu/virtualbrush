@@ -4,14 +4,16 @@
 
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/Guid.h"
 #include "VirtualBrush/Stroke.h"
 
 UBrushSaveGame* UBrushSaveGame::Create()
 {
-	USaveGame* SaveGame = UGameplayStatics::CreateSaveGameObject(StaticClass());
+	auto SaveGame = Cast<UBrushSaveGame>(UGameplayStatics::CreateSaveGameObject(StaticClass()));
 	if (SaveGame)
 	{
-		return Cast<UBrushSaveGame>(SaveGame);
+		SaveGame->SlotName = FGuid::NewGuid().ToString();
+		return SaveGame;
 	}
 	else
 	{
@@ -21,12 +23,12 @@ UBrushSaveGame* UBrushSaveGame::Create()
 
 bool UBrushSaveGame::Save()
 {
-	return UGameplayStatics::SaveGameToSlot(this, TEXT("Test"), 0);
+	return UGameplayStatics::SaveGameToSlot(this, SlotName, 0);
 }
 
-UBrushSaveGame* UBrushSaveGame::Load()
+UBrushSaveGame* UBrushSaveGame::Load(FString SlotName)
 {
-	USaveGame* SaveGame = UGameplayStatics::LoadGameFromSlot(TEXT("Test"), 0);
+	USaveGame* SaveGame = UGameplayStatics::LoadGameFromSlot(SlotName, 0);
 	if (SaveGame)
 	{
 		return Cast<UBrushSaveGame>(SaveGame);

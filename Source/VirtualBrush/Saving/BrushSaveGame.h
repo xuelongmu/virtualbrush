@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+
 #include "BrushSaveGame.generated.h"
 
 USTRUCT()
@@ -13,7 +14,7 @@ struct FStrokeState
 
 	// FStrokeState(const TSubclassOf<AStroke> InClass,  TArray<FVector> InControlPoints)
 	//     : Class(InClass), ControlPoints(InControlPoints) {}
-public: 
+public:
 	UPROPERTY()
 	TSubclassOf<class AStroke> Class;
 
@@ -32,9 +33,13 @@ class VIRTUALBRUSH_API UBrushSaveGame : public USaveGame
 public:
 	static UBrushSaveGame* Create();
 	bool Save();
-	static UBrushSaveGame* Load(); //TODO: add save location
+	static UBrushSaveGame* Load(FString SlotName); //TODO: add save location
 	void SerializeFromWorld(UWorld* World);
 	void DeserializeToWorld(UWorld* World);
+	FString GetSlotName() const { return SlotName; }
+
+	UPROPERTY(VisibleAnywhere)
+	FString SlotName;
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<FStrokeState> Strokes;
