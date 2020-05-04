@@ -2,6 +2,7 @@
 
 #include "BrushSaveGame.h"
 
+#include "BrushSaveGameIndex.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Guid.h"
@@ -9,11 +10,19 @@
 
 UBrushSaveGame* UBrushSaveGame::Create()
 {
-	auto SaveGame = Cast<UBrushSaveGame>(UGameplayStatics::CreateSaveGameObject(StaticClass()));
-	if (SaveGame)
+	auto NewSaveGame = Cast<UBrushSaveGame>(UGameplayStatics::CreateSaveGameObject(StaticClass()));
+	if (NewSaveGame)
 	{
-		SaveGame->SlotName = FGuid::NewGuid().ToString();
-		return SaveGame;
+		NewSaveGame->SlotName = FGuid::NewGuid().ToString();
+		if (!NewSaveGame->Save())
+		{
+			return nullptr;
+		}
+		UBrushSaveGameIndex* Index = UBrushSaveGameIndex::Load();
+		Index->AddSaveGame(NewSaveGame);
+		Index->Save();
+
+		return NewSaveGame;
 	}
 	else
 	{
@@ -23,6 +32,10 @@ UBrushSaveGame* UBrushSaveGame::Create()
 
 bool UBrushSaveGame::Save()
 {
+	for (auto Name : UBrushSaveGameIndex::Load()->GetSlotNames())
+	{
+		UE_LOG(LogTemp, Display, TEXT("Slot name: %s"), *Name);
+	}
 	return UGameplayStatics::SaveGameToSlot(this, SlotName, 0);
 }
 
