@@ -2,7 +2,9 @@
 
 #include "VRPawn.h"
 
-#include "Saving/BrushSaveGame.h"
+#include "EngineUtils.h"
+#include "PaintingGameMode.h"
+#include "VirtualBrush/UI/PaintingPicker/PaintingPicker.h"
 
 // Sets default values
 AVRPawn::AVRPawn()
@@ -22,27 +24,27 @@ void AVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HandControllerClass)
+	if (RightHandControllerClass)
 	{
-		// LeftController = GetWorld()->SpawnActor<APaintBrushHandController>(HandControllerClass);
-		// LeftController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-		// LeftController->SetHand(EControllerHand::Left);
-		// LeftController->SetOwner(this);
-
-		RightController = GetWorld()->SpawnActor<AHandControllerBase>(HandControllerClass);
+		RightController = GetWorld()->SpawnActor<AHandControllerBase>(RightHandControllerClass);
 		RightController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 		RightController->SetHand(EControllerHand::Right);
 		RightController->SetOwner(this);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("HandControllerClass not set up for %s"), *GetName());
+		UE_LOG(LogTemp, Error, TEXT("RightHandControllerClass not set up for %s"), *GetName());
 	}
-
-	auto PaintingSave = UBrushSaveGame::Create();
-	if (PaintingSave && PaintingSave->Save())
+	if (LeftHandControllerClass)
 	{
-		CurrentSlotName = PaintingSave->GetSlotName();
+		LeftController = GetWorld()->SpawnActor<AHandControllerBase>(LeftHandControllerClass);
+		LeftController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		LeftController->SetHand(EControllerHand::Left);
+		LeftController->SetOwner(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("LeftHandControllerClass not set up for %s"), *GetName());
 	}
 }
 
@@ -58,29 +60,36 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAction(TEXT("StrokeRight"), IE_Pressed, this, &AVRPawn::TriggerPressedRight);
 	PlayerInputComponent->BindAction(TEXT("StrokeRight"), IE_Released, this, &AVRPawn::TriggerReleasedRight);
-	PlayerInputComponent->BindAction(TEXT("Save"), IE_Released, this, &AVRPawn::Save);
-	PlayerInputComponent->BindAction(TEXT("Load"), IE_Released, this, &AVRPawn::Load);
+	PlayerInputComponent->BindAxis(TEXT("PaginateRight_X"), this, &AVRPawn::PaginateRightAxisInput);
+	PlayerInputComponent->BindAction(TEXT("TestInput"), IE_Pressed, this, &AVRPawn::TestInput);
 }
 
-void AVRPawn::Save()
+void AVRPawn::PaginateRightAxisInput(float AxisValue)
 {
-	auto PaintingSave = UBrushSaveGame::Load(CurrentSlotName);
-	if (PaintingSave)
+	int32 RoundedAxisInput = FMath::RoundHalfFromZero(AxisValue);
+	if (RoundedAxisInput != 0)
 	{
-		PaintingSave->SerializeFromWorld(GetWorld());
-		PaintingSave->Save();
-	}
-}
-
-void AVRPawn::Load()
-{
-	auto PaintingSave = UBrushSaveGame::Load(CurrentSlotName);
-	if (PaintingSave)
-	{
-		PaintingSave->DeserializeToWorld(GetWorld());
+		if (RoundedAxisInput != PreviousAxisInput)
+		{
+			UpdateCurrentPage(RoundedAxisInput);
+			PreviousAxisInput = RoundedAxisInput;
+		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Save Game Not Found"));
+		PreviousAxisInput = 0;
 	}
+}
+
+void AVRPawn::UpdateCurrentPage(int32 Offset)
+{
+	for (TActorIterator<APaintingPicker> PaintingPickerItr(GetWorld()); PaintingPickerItr; ++PaintingPickerItr)
+	{
+		PaintingPickerItr->UpdateCurrentPage(Offset);
+	}
+}
+
+void AVRPawn::TestInput()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Test input triggered"));
 }

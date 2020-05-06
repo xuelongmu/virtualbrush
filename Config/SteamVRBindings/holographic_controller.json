@@ -19,28 +19,24 @@
 					}
 				},
 				{
-					"mode": "dpad",
-					"path": "/user/hand/right/input/trackpad",
-					"parameters":
-					{
-						"sub_mode": "click"
-					},
-					"inputs":
-					{
-						"north":
-						{
-							"output": "/actions/main/in/Save"
-						}
-					}
-				},
-				{
 					"mode": "button",
 					"path": "/user/hand/right/input/grip",
 					"inputs":
 					{
 						"click":
 						{
-							"output": "/actions/main/in/Load"
+							"output": "/actions/main/in/TestInput"
+						}
+					}
+				},
+				{
+					"mode": "joystick",
+					"path": "/user/hand/right/input/joystick",
+					"inputs":
+					{
+						"position":
+						{
+							"output": "/actions/main/in/PaginateRight_X,PaginateRight_Y X Y_axis2d"
 						}
 					}
 				}

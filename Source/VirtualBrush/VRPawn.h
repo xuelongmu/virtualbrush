@@ -47,8 +47,9 @@ private:
 		}
 	}
 
-	void Save();
-	void Load();
+	void TestInput();
+	void PaginateRightAxisInput(float AxisValue);
+	void UpdateCurrentPage(int32 Offset);
 
 	//components
 	UPROPERTY(VisibleAnywhere)
@@ -66,9 +67,11 @@ private:
 
 	// configuration parameters
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AHandControllerBase> HandControllerClass;
+	TSubclassOf<AHandControllerBase> RightHandControllerClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AHandControllerBase> LeftHandControllerClass;
 
 	//state
-	UPROPERTY(VisibleAnywhere)
-	FString CurrentSlotName;
+	int32 PreviousAxisInput = 0;
 };

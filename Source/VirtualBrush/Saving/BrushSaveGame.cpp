@@ -32,10 +32,6 @@ UBrushSaveGame* UBrushSaveGame::Create()
 
 bool UBrushSaveGame::Save()
 {
-	for (auto Name : UBrushSaveGameIndex::Load()->GetSlotNames())
-	{
-		UE_LOG(LogTemp, Display, TEXT("Slot name: %s"), *Name);
-	}
 	return UGameplayStatics::SaveGameToSlot(this, SlotName, 0);
 }
 
